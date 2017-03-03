@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>BLACK
+        <--->BOARD</title>
+
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script src="jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            var socket = io.connect('http://10.21.253.211/');
+            var ca = document.getElementById("board");
+            var cont = ca.getContext("2d");
+            cont.scale(1, 1);
+            cont.fillStyle = "#FFFFFF";
+            var prevX, prevY;
+            var used_color = "white";
+            socket.on("draw", function (data) {
+                funct1(data.step.x, data.step.y, data.color.x, data.prev.x, data.prev.y);
+            });
+
+            var funct1 = function (x, y, col, preX, preY) {
+                used_color = $("#color_value").val();
+
+                cont.beginPath();
+                cont.moveTo(preX, preY);
+                cont.lineTo(preX + x, preY + y);
+                cont.strokeStyle = col;
+                cont.stroke();
+
+            }
+
+            $("#board").mousedown(function (e) {
+                prevX = e.pageX;
+                prevY = e.pageY;
+                $(this).mousemove(function (e) {
+                    socket.emit('coords', {
+                        step: {
+                            x: (e.pageX - prevX),
+                            y: (e.pageY - prevY)
+                        },
+                        prev: {
+                            x: prevX,
+                            y: prevY
+                        },
+                        color: {
+                            x: used_color
+
+                        }
+                    });
+                    prevX = e.pageX;
+                    prevY = e.pageY;
+                });
+
+            });
+
+            $("#board").mouseup(function (e) {
+                $(this).unbind("mousemove");
+            });
+            $("#text").click(function () {
+                cont.restore();
+                cont.clearRect(0, 0, 600, 600);
+            });
+
+        }); //Mouse movement Detect Coordinates
+
+        function saveCanvas() {
+            var canvas = document.getElementById("board");
+            var dataURL = canvas.toDataURL("image/png");
+            dataURL = dataURL.replace("image/png", "image/octet-stream");
+            document.location.href = dataURL;
+
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <canvas id="board" width="600" height="600"></canvas>
+
+    <div id="logo">
+
+        <img src="logo.png" id="clear" />
+    </div>
+    <img src="text.png" id="text" class="tilt" />
+
+    <div id="color_chooser">
+        <p>PICK A COLOR</p>
+        <input type="color" id="color_value" value="#FFFFFF" />
+    </div>
+    <input type="button" onclick="saveCanvas()" value="Save" />
+</body>
+
+
+</html>

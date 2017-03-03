@@ -1,0 +1,54 @@
+* {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body {
+    background-color: white;
+    position: relative;
+}
+
+#board {
+    background-color: black;
+}
+
+#logo {
+    position: absolute;
+    left: 70%;
+    bottom: 70%;
+}
+
+#text {
+    position: absolute;
+    bottom: 30%;
+    background: url(trash.png);
+    background-repeat: no-repeat;
+    height: 40px;
+    width: 40px;
+    right: 0px;
+    top: 0px;
+    z-index: 100;
+    color: white;
+    background-size: 40px 40px;
+}
+
+.tilt {
+    transform: rotate(-30deg);
+    -webkit-transform: rotate(-30deg);
+    /* Safari and Chrome */
+    *
+}
+
+#color-picker {
+    position: absolute;
+    top: 50px;
+    right: 0px;
+    z-index: 100;
+}
+
+#color_chooser {
+    position: absolute;
+    left: 80%;
+    bottom: 10%;
+}

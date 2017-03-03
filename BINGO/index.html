@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>BINGO</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+    <script src="jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var chd;
+        var par;
+        var strike = 0;
+        var row = [];
+        var col = [];
+        var d1 = 5;
+        var d2 = 5;
+        $(document).ready(function () {
+            var socket = io.connect('http://10.21.253.157/');
+            for (var i = 1; i < 6; i++) {
+                row[i] = 5;
+                col[i] = 5;
+            }
+
+            function fill() {
+                var num = [];
+                for (var i = 1; i < 26; i++) {
+                    num[i - 1] = i;
+                }
+                $("#table1 tbody").children().each(function (index1) {
+                    $(this).children().each(function (index2) {
+                        var ind = Math.floor(Math.random() * 100) % (num.length)
+                        $(this).attr("id", num[ind]).html(num[ind]);
+                        num.splice(ind, 1);
+                    });
+                });
+                $("#b1_fill").hide();
+                $("#table1").removeClass('disable');
+
+            }
+            fill()
+                //$("#b1_fill").on('click', fill);
+
+
+            $('td').click(function () {
+                $(this).addClass("crossed");
+                socket.emit('coords', $(this).attr("id"));
+
+            });
+            socket.on("get", function (id) {
+                $("#messages").append('<p>-->Selected ' + id + "</p>");
+                $("#sound1")[0].play();
+                cal(id);
+            });
+            socket.on('bingo', function () {
+                window.location = "bingo.html";
+            });
+
+            function cal(id) {
+                $("#" + id).addClass("crossed");
+                par = $("#" + id).parent().parent().children().index($("#" + id).parent()) + 1;
+                console.log("->:" + id);
+                chd = $("#" + id).parent().children().index($("#" + id)) + 1;
+                row[par] = row[par] - 1;
+                col[chd] = col[chd] - 1;
+                if (par == chd) {
+                    d1 = d1 - 1;
+                }
+                if (par + chd == 6) {
+                    d2 = d2 - 1;
+                }
+                if (row[par] == 0) {
+                    strike = strike + 1;
+                    $("#hd" + strike).addClass("tobingo");
+                }
+                if (col[chd] == 0) {
+                    strike++;
+                    $("#hd" + strike).addClass("tobingo");
+                }
+                if (d1 == 0) {
+                    d1 = 1;
+                    strike++;
+                    $("#hd" + strike).addClass("tobingo");
+                }
+                if (d2 == 0) {
+                    d2 = 1;
+                    strike++;
+                    $("#hd" + strike).addClass("tobingo");
+                }
+                if (strike == 5) {
+                    socket.emit('PlayerBingo');
+                }
+                $("#" + id).unbind("click"); //Disabling after one click
+
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div id="main_content">
+        <div id="messages"></div>
+        <div id="table_container" class="outlined row">
+            <div class="col-lg-4">
+                <input type="button" value="FILL" id="b1_fill" />
+            </div>
+            <div class="col-lg-3">
+                <table id="table1" border="1" class="align_center disable table">
+                    <thead>
+                        <tr class="nowhite_bgrnd">
+                            <th id="hd1">B</th>
+                            <th id="hd2">I</th>
+                            <th id="hd3">N</th>
+                            <th id="hd4">G</th>
+                            <th id="hd5">O</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <audio src="beep.wav" autostart="false" width="0" height="0" id="sound1" enablejavascript="true"></audio>
+</body>
+
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>BINGO</title>
+		<link rel="stylesheet" type="text/css" href="style.css"/>
+		<script src="jquery-1.9.1.min.js" type="text/javascript"></script>
+		<script>
+			var chd;
+			var par;
+			var strike=0;
+			var row=[];
+			var col=[];
+			var d1=5;var d2=5;
+			$(document).ready(function(){
+				for(var i=1;i<6;i++){
+				row[i]=5;
+				col[i]=5;
+				}//Junk Code
+			
+			
+				$("#b1_fill").click(function(){
+					var num=[];
+					for(var i=1;i<26;i++){
+						num[i-1] = i;
+					}
+					$("#table1 tbody").children().each(function (index1) {
+						$(this).children().each(function(index2){
+						var ind = Math.floor(Math.random()*100) % (num.length)
+							$(this).attr("id",num[ind]).html(num[ind]);
+							num.splice(ind,1);
+						})
+					})
+				$("#b1_fill").hide(); //Letting button off duty
+				$("#b1_fill").unbind("click");
+				});				
+				$('td').click(function(){
+					$(this).addClass("crossed");
+					console.log($(this).attr("id"));
+					//console.log($(this).parent().children().index(this));
+					par=$(this).parent().parent().children().index($(this).parent())+1;
+					chd=$(this).parent().children().index(this)+1;
+					
+					console.log(chd);
+					console.log(par);
+					
+					row[par]=row[par]-1;
+					col[chd]=col[chd]-1;
+					
+					if(par==chd){
+						d1=d1-1;
+					}
+					if(par+chd==6){
+						d2=d2-1;
+					}
+					
+					if(row[par]==0 || col[chd]==0 || d1==0||d2==0){
+						strike=strike+1;
+					if(d1==0){
+						d1=4;
+					}
+					if(d2==0){
+						d2=4;
+					}
+					$("#"+strike).addClass("tobingo");
+					}
+					if(strike==5){
+						alert("Bingo!!!");
+					}
+					
+					$(this).unbind("click");//Diabling after one click
+				});
+			});
+		</script>
+	</head>
+	
+	<body>
+		<div id="main_content">
+		<div id="table_container"class="outlined">
+			<table id="table1" border="1" class="align_center" height=300 width=300>
+				<thead>
+					<tr class="nowhite_bgrnd" >
+					<th id="1">B</th>
+					<th id="2">I</th>
+					<th id="3">N</th>
+					<th id="4">G</th>
+					<th id="5">O</th>
+					</tr>
+				</thead>
+				<tbody>		
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				</tbody>
+			</table>
+		<div>
+		<div id="right_pane" class="right outlined" >
+			<input type="button" value="FILL" id="b1_fill" />
+		</div>
+		<div>
+	</body>
+</html>
